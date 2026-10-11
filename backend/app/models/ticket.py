@@ -49,4 +49,5 @@ class Ticket(Base):
     registration: Mapped["Registration"] = relationship(
         "Registration",
         back_populates="ticket",
+        lazy="selectin",
     )

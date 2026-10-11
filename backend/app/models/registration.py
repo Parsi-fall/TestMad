@@ -80,6 +80,7 @@ class Registration(Base):
         back_populates="registration",
         uselist=False,
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
     __table_args__ = (

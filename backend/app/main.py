@@ -31,6 +31,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.api.v1.events import router as events_router
+from app.api.v1.registrations import router as registrations_router
+
+app.include_router(events_router, prefix="/api/v1")
+app.include_router(registrations_router, prefix="/api/v1")
+
 
 @app.get("/api/v1/health", tags=["Health"])
 async def health_check():
