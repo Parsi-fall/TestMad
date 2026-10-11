@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 from app.api.deps import get_db
 from app.core.config import settings
 from app.models.registration import Registration, RegistrationStatus
-from app.schemas.registration import RegistrationCreate, RegistrationRead
+from app.schemas.registration import RegistrationCreate, RegistrationRead, RegistrationCancelResponse
 from app.schemas.ticket import TicketRead
 from app.services.registration import register_attendee
 
@@ -91,4 +91,23 @@ async def get_registration_by_token(
         waitlist_position=None,
         ticket=ticket_read,
         created_at=reg.created_at,
+    )
+
+
+@router.post("/registrations/cancel/{cancel_token}", response_model=RegistrationCancelResponse)
+async def cancel_registration(
+    cancel_token: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Cancel an attendee's registration by cancel_token.
+    If the attendee held a confirmed spot, the first person in waitlist is automatically promoted.
+    """
+    from app.services.waitlist import cancel_registration_by_token
+
+    result = await cancel_registration_by_token(db, cancel_token)
+    return RegistrationCancelResponse(
+        status=result["status"],
+        message=result["message"],
+        promoted_email=result.get("promoted_email"),
     )
