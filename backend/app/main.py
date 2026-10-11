@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.init_db import init_db
+from app.services.scheduler import start_scheduler, stop_scheduler
 
 
 @asynccontextmanager
@@ -13,7 +14,14 @@ async def lifespan(app: FastAPI):
         await init_db()
     except Exception as e:
         print(f"[Lifespan] DB initialization error: {e}")
+
+    # Start background 24h reminder scheduler
+    start_scheduler()
+
     yield
+
+    # Shutdown background scheduler
+    stop_scheduler()
 
 
 app = FastAPI(
