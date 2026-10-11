@@ -33,9 +33,13 @@ app.add_middleware(
 
 from app.api.v1.events import router as events_router
 from app.api.v1.registrations import router as registrations_router
+from app.api.v1.checkin import router as checkin_router
+from app.api.v1.ws import router as ws_router
 
 app.include_router(events_router, prefix="/api/v1")
 app.include_router(registrations_router, prefix="/api/v1")
+app.include_router(checkin_router, prefix="/api/v1")
+app.include_router(ws_router, prefix="/api/v1")
 
 
 @app.get("/api/v1/health", tags=["Health"])
