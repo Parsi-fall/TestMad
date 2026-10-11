@@ -1,12 +1,26 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.core.init_db import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize DB schema and seed demo event if needed
+    try:
+        await init_db()
+    except Exception as e:
+        print(f"[Lifespan] DB initialization error: {e}")
+    yield
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
-    description="Service for event registration, waitlist, ticket issuance, and check-in."
+    description="Service for event registration, waitlist, ticket issuance, and check-in.",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
